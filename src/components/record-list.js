@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import RecordDataService from '../services/record-service'
+import { DeleteIcon } from '@chakra-ui/icons'
 
 class recordList extends Component{
     constructor(props){
@@ -9,6 +10,8 @@ class recordList extends Component{
         };
         this.recordDataService = new RecordDataService();
         this.subjectAllRecord$ = this.recordDataService.subjectAllRecord.asObservable();
+        this.subjectDelete$ = this.recordDataService.subjectDelete.asObservable();
+        this.handleDeleteItem = this.handleDeleteItem.bind(this);
         
     }
 
@@ -18,6 +21,20 @@ class recordList extends Component{
         this.subjectAllRecord$.subscribe((data) =>{
             this.setState({data: data})
         })
+    }
+
+    handleDeleteItem(id){
+        this.recordDataService.delete(id);
+        this.subjectDelete$.subscribe((status)=>{
+            if(status == '200'){
+                this.subjectAllRecord$.subscribe((data) =>{
+                    this.setState({data: data})
+                })
+            }
+
+        })
+        this.recordDataService.getAll();
+        
     }
 
     render(){
@@ -38,6 +55,7 @@ class recordList extends Component{
                                     <tr>
                                         <td>{item['date']}</td>
                                         <td>{item['content']}</td>
+                                        <td onClick={()=>this.handleDeleteItem(item['id'])} ><DeleteIcon/></td>
                                     </tr>
                                 )
                                 

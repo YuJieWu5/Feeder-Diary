@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 export default class RecordDataService {
   subjectAllRecord = new Subject();
   subjectCreate = new Subject();
+  subjectDelete = new Subject();
 
   getAll() {
     return http.get("/tutorials")
@@ -29,7 +30,13 @@ export default class RecordDataService {
   //   return http.put(`/tutorials/${id}`, data);
   // }
   delete(id) {
-    return http.delete(`/tutorials/${id}`);
+    return http.delete(`/tutorials/${id}`)
+    .then((res)=>{
+      this.subjectDelete.next(res['status'])
+    })
+    .catch((error)=>{
+      console.log(error)
+    });
   }
   // deleteAll() {
   //   return http.delete(`/tutorials`);
